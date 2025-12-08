@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -324,8 +323,5 @@ app.get('/api/sports', async (_req: Request, res: Response) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-  console.log(`API endpoints available at http://localhost:${PORT}/api`);
-});
+// Export the Express app as a serverless function
+export default app;
