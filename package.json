@@ -1,0 +1,17 @@
+{
+  "name": "cs601-final",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "start:backend": "cd backend && npm start",
+    "dev": "echo 'Run npm run dev:backend in one terminal and npm run dev:frontend in another'",
+    "lint": "cd frontend && npm run lint && cd ../backend && npm run lint",
+    "lint:fix": "cd frontend && npm run lint:fix && cd ../backend && npm run lint:fix"
+  }
+}
