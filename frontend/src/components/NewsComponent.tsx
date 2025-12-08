@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-interface NewsArticle {
-  title: string;
-  description: string;
-  url: string;
-  publishedAt: string;
-  source: {
-    name: string;
-  };
-}
+import { getNews, Article } from '../services/newsService';
 
 const NewsComponent: React.FC = () => {
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
@@ -25,12 +16,7 @@ const NewsComponent: React.FC = () => {
     setError('');
 
     try {
-      // Fetch news from backend API
-      const response = await fetch('http://localhost:3000/api/news');
-      if (!response.ok) {
-        throw new Error('Failed to fetch news');
-      }
-      const articles = await response.json();
+      const articles = await getNews();
       setArticles(articles);
     } catch (err) {
       console.error('Error loading news:', err);

@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-interface Capital {
-  id: number;
-  capital: string;
-  state: string;
-}
+import { getCapitals, Capital } from '../services/capitalsService';
 
 interface Bucket {
   state: string;
   capital: Capital | null;
   emoji: string;
 }
-
-const API_URL = 'http://localhost:3000/api';
 
 const DragAndDropComponent: React.FC = () => {
   const [availableCapitals, setAvailableCapitals] = useState<Capital[]>([]);
@@ -36,11 +29,7 @@ const DragAndDropComponent: React.FC = () => {
 
   const loadCapitals = async () => {
     try {
-      const response = await fetch(`${API_URL}/capitals`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch capitals');
-      }
-      const capitals = await response.json();
+      const capitals = await getCapitals();
       setAvailableCapitals(capitals);
     } catch (error) {
       console.error('Error loading capitals:', error);

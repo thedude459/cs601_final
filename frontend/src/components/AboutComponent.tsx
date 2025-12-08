@@ -74,7 +74,7 @@ const AboutComponent: React.FC = () => {
             <div className="feature-card">
               <div className="feature-icon">⚡</div>
               <h4>Modern Stack</h4>
-              <p>React, TypeScript, Vite, and Express</p>
+              <p>React, TypeScript, and Vite with direct API integration</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">📱</div>
@@ -98,11 +98,11 @@ const AboutComponent: React.FC = () => {
               </ul>
             </div>
             <div className="tech-category">
-              <h4>Backend</h4>
+              <h4>Service Layer</h4>
               <ul className="tech-list">
-                <li>Express.js</li>
-                <li>TypeScript</li>
-                <li>REST APIs</li>
+                <li>TypeScript Services</li>
+                <li>Direct API Integration</li>
+                <li>External APIs</li>
               </ul>
             </div>
             <div className="tech-category">

@@ -1,6 +1,6 @@
 # CS601 Final Project - Full Stack Portfolio
 
-A modern full-stack TypeScript portfolio application showcasing React 19, Express backend, and integration with multiple external APIs.
+A modern full-stack TypeScript portfolio application showcasing React 19 with direct external API integrations.
 
 ## 🎯 Project Overview
 
@@ -10,28 +10,29 @@ This portfolio demonstrates advanced web development skills including:
 - Live tech news feed from Hacker News
 - Boston sports team scores (Bruins, Red Sox, Patriots, Celtics)
 - Responsive design with CSS Grid, Flexbox, and custom CSS variables
-- Clean architecture with separate frontend and backend
+- Clean architecture with service layer for API calls
 
 ## 📁 Project Structure
 
 ```
 cs601_final/
-├── backend/              # Express API server
-│   ├── src/
-│   │   └── server.ts     # API endpoints and integrations
-│   ├── package.json
-│   └── tsconfig.json
 ├── frontend/             # React + TypeScript app
 │   ├── src/
 │   │   ├── components/   # React components
+│   │   ├── services/     # API service functions
+│   │   │   ├── capitalsService.ts
+│   │   │   ├── weatherService.ts
+│   │   │   ├── newsService.ts
+│   │   │   └── sportsService.ts
 │   │   ├── pages/        # Page components
 │   │   ├── App.tsx       # Main app with routing
 │   │   ├── main.tsx      # Entry point
 │   │   └── styles.css    # Global styles
 │   ├── index.html
-│   ├── package.json
+│   ├── package.json      # All dependencies
 │   ├── tsconfig.json
 │   └── vite.config.ts
+├── vercel.json           # Vercel deployment config
 ├── package.json          # Root scripts
 └── README.md
 ```
@@ -44,6 +45,7 @@ cs601_final/
 - **Vite** - Lightning-fast development server and optimized builds
 - **CSS Variables** - Centralized design system with custom properties
 - **Responsive Design** - Mobile-first approach with CSS Grid and Flexbox
+- **Service Layer Architecture** - Clean separation of API logic in service modules
 - **Interactive Components**:
   - Drag-and-drop capitals matching game
   - Browser geolocation with weather display
@@ -51,21 +53,20 @@ cs601_final/
   - Sports scores with win/loss indicators
   - Navigation cards with hover effects
 
-### Backend
-- **Express 4** - RESTful API server
-- **TypeScript** - Type-safe server code
-- **CORS Enabled** - Secure cross-origin requests
-- **External API Integrations**:
-  - **ESPN API** - Sports scores (public endpoints, no authentication)
-  - **Hacker News API** - Tech news stories
-  - **Open-Meteo API** - Weather data in Fahrenheit
-  - **OpenStreetMap Nominatim** - Geocoding and reverse geocoding
+### External API Integrations
+- **ESPN API** - Sports scores (public endpoints, no authentication)
+- **Hacker News API** - Tech news stories
+- **Open-Meteo API** - Weather data in Fahrenheit
+- **OpenStreetMap Nominatim** - Geocoding and reverse geocoding
+
+All API calls are handled directly from the frontend through service modules in `src/services/`.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - **Node.js** 18+ and npm
+- **Vercel CLI** - Install globally: `npm install -g vercel`
 - Modern web browser with JavaScript enabled
 
 ### Installation
@@ -76,47 +77,52 @@ cs601_final/
    cd cs601_final
    ```
 
-2. **Install dependencies for both frontend and backend**
+2. **Install dependencies**
    ```bash
-   npm run install:all
+   npm install
+   ```
+   
+   Or install directly in the frontend folder:
+   ```bash
+   cd frontend && npm install
    ```
 
 ### Development
 
-Run both servers in separate terminals:
+**Run the application locally:**
 
-**Terminal 1 - Backend Server:**
-```bash
-cd backend
-npm run dev
-```
-Backend runs on `http://localhost:3000`
-
-**Terminal 2 - Frontend Dev Server:**
 ```bash
 cd frontend
 npm run dev
 ```
-Frontend runs on `http://localhost:5173`
 
-The frontend is configured to proxy API requests to the backend automatically.
+This starts the Vite development server, typically on `http://localhost:5173`.
+
+The application makes direct API calls to external services (ESPN, Hacker News, Open-Meteo, OpenStreetMap) from the browser.
 
 ### Building for Production
 
-**Build both frontend and backend:**
+**Build the frontend:**
 ```bash
 npm run build
 ```
 
-**Or build individually:**
+This creates an optimized production build in `frontend/dist/`.
+
+### Deployment
+
+**Deploy to Vercel:**
+
 ```bash
-npm run build:backend   # Compiles TypeScript to dist/
-npm run build:frontend  # Creates optimized build in dist/
+vercel          # Preview deployment
+vercel --prod   # Production deployment
 ```
+
+The deployment serves the static frontend built by Vite. All API calls are made directly from the browser to external services.
 
 ### Code Quality
 
-**Lint both projects:**
+**Lint the code:**
 ```bash
 npm run lint
 ```
@@ -126,22 +132,33 @@ npm run lint
 npm run lint:fix
 ```
 
-Both frontend and backend use:
+The project uses:
 - ESLint 9 with flat config
 - Prettier for code formatting
 - TypeScript strict mode
 
-## 🌐 API Endpoints
+## 🌐 Service Architecture
 
-### GET `/api/capitals`
-Returns New England state capitals for the drag-and-drop game.
+The application uses a service layer pattern for clean API integration:
 
-**Response:**
-```json
-{
-  "capitals": [
-    { "state": "Massachusetts", "capital": "Boston", "emoji": "🏛️" },
-    { "state": "Connecticut", "capital": "Hartford", "emoji": "⚓" }
+### `src/services/capitalsService.ts`
+Provides static data for the drag-and-drop game:
+- `getCapitals()` - Returns New England state capitals
+
+### `src/services/weatherService.ts`
+Integrates with Open-Meteo and OpenStreetMap:
+- `getWeather(lat, lon)` - Fetches weather data based on coordinates
+- Returns temperature, conditions, wind, humidity, UV index, etc.
+
+### `src/services/newsService.ts`
+Integrates with Hacker News API:
+- `getNews()` - Fetches top 12 tech news stories
+- Returns articles with title, description, URL, and timestamp
+
+### `src/services/sportsService.ts`
+Integrates with ESPN API:
+- `getSportsScores()` - Fetches recent games for Boston teams
+- Returns scores for Bruins, Red Sox, Patriots, and Celtics
   ]
 }
 ```
@@ -234,15 +251,6 @@ Returns recent game scores for Boston sports teams (7-day lookback).
 - TypeScript 5.7
 - React Router DOM v7
 - Vite 7
-- ESLint 9 (flat config)
-- Prettier 3.7
-
-### Backend Stack
-- Node.js
-- Express 4
-- TypeScript 5.7
-- Axios (HTTP client)
-- CORS
 - ESLint 9 (flat config)
 - Prettier 3.7
 

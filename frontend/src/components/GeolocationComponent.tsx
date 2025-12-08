@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getWeather, WeatherData } from '../services/weatherService';
 
 interface LocationData {
   latitude: number;
@@ -7,25 +8,6 @@ interface LocationData {
   accuracy: number;
   timestamp: number;
 }
-
-interface WeatherData {
-  temperature: number;
-  feelsLike: number;
-  description: string;
-  humidity: number;
-  precipitation: number;
-  precipitationProbability: number;
-  windSpeed: number;
-  windDirection: number;
-  cloudCover: number;
-  uvIndex: number;
-  sunrise: string;
-  sunset: string;
-  city: string;
-  icon: string;
-}
-
-const API_URL = 'http://localhost:3000/api';
 
 const GeolocationComponent: React.FC = () => {
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -111,13 +93,7 @@ const GeolocationComponent: React.FC = () => {
     setLoadingWeather(true);
 
     try {
-      const response = await fetch(`${API_URL}/weather?lat=${lat}&lon=${lon}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch weather data');
-      }
-
-      const data = await response.json();
+      const data = await getWeather(lat, lon);
       setWeather(data);
     } catch (err) {
       console.error('Error fetching weather:', err);

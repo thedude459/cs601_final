@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-interface Game {
-  team: string;
-  opponent: string;
-  teamScore: number;
-  opponentScore: number;
-  date: string;
-  status: string;
-  logo: string;
-  sport: string;
-}
+import { getSportsScores, Game } from '../services/sportsService';
 
 const BostonSportsScoreComponent: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -26,12 +16,7 @@ const BostonSportsScoreComponent: React.FC = () => {
     setError('');
 
     try {
-      // Fetch sports data from backend API
-      const response = await fetch('http://localhost:3000/api/sports');
-      if (!response.ok) {
-        throw new Error('Failed to fetch sports data');
-      }
-      const games = await response.json();
+      const games = await getSportsScores();
       setGames(games);
     } catch (err) {
       console.error('Error loading sports scores:', err);
