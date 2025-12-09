@@ -1,6 +1,6 @@
-# CS601 Final Project - Full Stack Portfolio
+# CS601 Final Project - React Portfolio
 
-A modern full-stack TypeScript portfolio application showcasing React 19 with direct external API integrations.
+A modern React TypeScript portfolio application showcasing React 19 with direct external API integrations.
 
 ## 🎯 Project Overview
 
@@ -57,7 +57,7 @@ cs601_final/
 - **ESPN API** - Sports scores (public endpoints, no authentication)
 - **Hacker News API** - Tech news stories
 - **Open-Meteo API** - Weather data in Fahrenheit
-- **OpenStreetMap Nominatim** - Geocoding and reverse geocoding
+- **OpenStreetMap API** - Geocoding and reverse geocoding
 
 All API calls are handled directly from the frontend through service modules in `src/services/`.
 
@@ -66,7 +66,6 @@ All API calls are handled directly from the frontend through service modules in 
 ### Prerequisites
 
 - **Node.js** 18+ and npm
-- **Vercel CLI** - Install globally: `npm install -g vercel`
 - Modern web browser with JavaScript enabled
 
 ### Installation
@@ -79,31 +78,38 @@ All API calls are handled directly from the frontend through service modules in 
 
 2. **Install dependencies**
    ```bash
+   cd frontend
    npm install
-   ```
-   
-   Or install directly in the frontend folder:
-   ```bash
-   cd frontend && npm install
    ```
 
 ### Development
 
 **Run the application locally:**
 
-```bash
-cd frontend
-npm run dev
-```
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-This starts the Vite development server, typically on `http://localhost:5173`.
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-The application makes direct API calls to external services (ESPN, Hacker News, Open-Meteo, OpenStreetMap) from the browser.
+3. Open your browser and navigate to the URL shown in the terminal (typically `http://localhost:5173`)
+
+The Vite development server provides:
+- Hot Module Replacement (HMR) for instant updates
+- Fast refresh for React components
+- TypeScript type checking in the IDE
+
+The application makes direct API calls to external services (ESPN, Hacker News, Open-Meteo, OpenStreetMap) from the browser, so no backend server is required.
 
 ### Building for Production
 
 **Build the frontend:**
 ```bash
+cd frontend
 npm run build
 ```
 
@@ -111,24 +117,25 @@ This creates an optimized production build in `frontend/dist/`.
 
 ### Deployment
 
-**Deploy to Vercel:**
+The project can be deployed to any static hosting service (Vercel, Netlify, GitHub Pages, etc.). The deployment serves the static frontend built by Vite. All API calls are made directly from the browser to external services.
 
+**Example deployment to Vercel:**
 ```bash
 vercel          # Preview deployment
 vercel --prod   # Production deployment
 ```
 
-The deployment serves the static frontend built by Vite. All API calls are made directly from the browser to external services.
-
 ### Code Quality
 
 **Lint the code:**
 ```bash
+cd frontend
 npm run lint
 ```
 
 **Auto-fix linting issues:**
 ```bash
+cd frontend
 npm run lint:fix
 ```
 
@@ -159,64 +166,6 @@ Integrates with Hacker News API:
 Integrates with ESPN API:
 - `getSportsScores()` - Fetches recent games for Boston teams
 - Returns scores for Bruins, Red Sox, Patriots, and Celtics
-  ]
-}
-```
-
-### GET `/api/weather`
-Returns weather data for given coordinates.
-
-**Query Parameters:**
-- `lat` - Latitude (required)
-- `lon` - Longitude (required)
-
-**Response:**
-```json
-{
-  "temperature": 45.2,
-  "conditions": "Partly cloudy",
-  "windSpeed": 12.5,
-  "location": "Boston, MA"
-}
-```
-
-### GET `/api/news`
-Returns top 12 tech stories from Hacker News.
-
-**Response:**
-```json
-{
-  "articles": [
-    {
-      "title": "Story Title",
-      "url": "https://...",
-      "source": { "name": "Hacker News" },
-      "publishedAt": "2025-12-08T...",
-      "description": "Story excerpt..."
-    }
-  ]
-}
-```
-
-### GET `/api/sports`
-Returns recent game scores for Boston sports teams (7-day lookback).
-
-**Response:**
-```json
-{
-  "games": [
-    {
-      "team": "Boston Bruins",
-      "logo": "🏒",
-      "opponent": "Toronto Maple Leafs",
-      "teamScore": 4,
-      "opponentScore": 2,
-      "status": "Final",
-      "date": "2025-12-07"
-    }
-  ]
-}
-```
 
 ## 📄 Pages
 

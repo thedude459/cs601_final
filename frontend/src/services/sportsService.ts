@@ -1,3 +1,14 @@
+/**
+ * Sports Service
+ *
+ * This service integrates with the ESPN public API to fetch recent game scores
+ * for Boston sports teams (Bruins, Red Sox, Patriots, Celtics).
+ *
+ * The service fetches games from the last 7 days and returns the most recent
+ * game for each team with scores, opponent information, and game status.
+ */
+
+// Interface representing a single game result
 export interface Game {
   team: string;
   opponent: string;
@@ -9,14 +20,16 @@ export interface Game {
   sport: string;
 }
 
+// Internal interface for team configuration
 interface Team {
-  name: string;
-  sport: string;
-  league: string;
-  logo: string;
-  searchTerms: string[];
+  name: string; // Display name (e.g., "Bruins")
+  sport: string; // Sport type for ESPN API (e.g., "hockey")
+  league: string; // League abbreviation (e.g., "nhl")
+  logo: string; // Emoji icon for display
+  searchTerms: string[]; // Terms to match team names in ESPN data
 }
 
+// Configuration for all Boston sports teams being tracked
 const teams: Team[] = [
   {
     name: 'Bruins',
@@ -48,18 +61,31 @@ const teams: Team[] = [
   },
 ];
 
+/**
+ * Extracts and formats game data from ESPN API event response
+ *
+ * @param event - Raw event data from ESPN API
+ * @param team - Team configuration object
+ * @returns Formatted Game object with scores and details
+ */
 const extractGameData = (event: any, team: Team): Game => {
+  // Get the competition data (ESPN can have multiple competitions per event)
   const competition = event.competitions[0];
+
+  // Find home and away teams from competitors array
   const homeTeam = competition.competitors.find((c: any) => c.homeAway === 'home');
   const awayTeam = competition.competitors.find((c: any) => c.homeAway === 'away');
 
+  // Determine if Boston team is home or away
   const isBostonHome = team.searchTerms.some((term: string) =>
     homeTeam?.team?.displayName?.toLowerCase().includes(term.toLowerCase())
   );
 
+  // Assign Boston team and opponent based on home/away status
   const bostonTeam = isBostonHome ? homeTeam : awayTeam;
   const opponent = isBostonHome ? awayTeam : homeTeam;
 
+  // Return formatted game data
   return {
     team: team.name,
     opponent: opponent?.team?.shortDisplayName || opponent?.team?.displayName || 'TBD',
@@ -72,6 +98,12 @@ const extractGameData = (event: any, team: Team): Game => {
   };
 };
 
+/**
+ * Formats a Date object into ESPN API date format (YYYYMMDD)
+ *
+ * @param date - Date to format
+ * @returns Formatted date string (e.g., "20251208")
+ */
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -79,16 +111,30 @@ const formatDate = (date: Date): string => {
   return `${year}${month}${day}`;
 };
 
+/**
+ * Fetches recent game scores for all Boston sports teams
+ *
+ * This function:
+ * 1. Queries ESPN API for each team's games from the last 7 days
+ * 2. Filters results to find games featuring the Boston team
+ * 3. Returns the most recent game for each team
+ * 4. Handles errors gracefully by returning placeholder data
+ *
+ * @returns Promise resolving to array of Game objects (one per team)
+ */
 export const getSportsScores = async (): Promise<Game[]> => {
+  // Create array of promises, one for each team
   const gamePromises = teams.map(async (team) => {
     try {
-      // Fetch last 7 days of games (includes today and recent past)
+      // Calculate date range: last 7 days including today
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
       const endDate = formatDate(new Date());
       const startDate = formatDate(sevenDaysAgo);
 
+      // Fetch scoreboard data from ESPN API
+      // URL format: /sports/{sport}/{league}/scoreboard?dates={start}-{end}
       const response = await fetch(
         `https://site.api.espn.com/apis/site/v2/sports/${team.sport}/${team.league}/scoreboard?dates=${startDate}-${endDate}`
       );
@@ -96,6 +142,9 @@ export const getSportsScores = async (): Promise<Game[]> => {
       if (!response.ok) throw new Error('Failed to fetch');
 
       const data: any = await response.json();
+
+      // Filter events to find games involving Boston team
+      // ESPN data includes all games, so we search for team name matches
       const bostonEvents = data.events?.filter((event: any) =>
         event.competitions?.[0]?.competitors?.some((comp: any) =>
           team.searchTerms.some((term) =>
@@ -105,7 +154,7 @@ export const getSportsScores = async (): Promise<Game[]> => {
       );
 
       if (bostonEvents && bostonEvents.length > 0) {
-        // Get the most recent game
+        // Sort by date to get the most recent game
         const mostRecentEvent = bostonEvents.sort(
           (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )[0];
@@ -113,7 +162,7 @@ export const getSportsScores = async (): Promise<Game[]> => {
         return extractGameData(mostRecentEvent, team);
       }
 
-      // No game found in last 7 days
+      // No game found in the last 7 days - return placeholder
       return {
         team: team.name,
         opponent: 'No recent game',
@@ -125,6 +174,7 @@ export const getSportsScores = async (): Promise<Game[]> => {
         sport: team.sport,
       };
     } catch (err) {
+      // Handle errors gracefully - return placeholder data
       console.error(`Error fetching ${team.name}:`, err);
       return {
         team: team.name,
@@ -139,5 +189,6 @@ export const getSportsScores = async (): Promise<Game[]> => {
     }
   });
 
+  // Wait for all team requests to complete and return results
   return Promise.all(gamePromises);
 };
