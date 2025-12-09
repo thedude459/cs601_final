@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getCapitals, Capital } from '../services/capitalsService';
 
@@ -23,18 +23,19 @@ const DragAndDropComponent: React.FC = () => {
   const [successCount, setSuccessCount] = useState<number>(0);
   const [gameComplete, setGameComplete] = useState<boolean>(false);
 
-  useEffect(() => {
-    loadCapitals();
-  }, []);
-
-  const loadCapitals = async () => {
+  const loadCapitals = useCallback(async () => {
     try {
       const capitals = await getCapitals();
       setAvailableCapitals(capitals);
     } catch (error) {
       console.error('Error loading capitals:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadCapitals();
+  }, [loadCapitals]);
 
   const handleDragStart = (capital: Capital) => {
     setDraggedCapital(capital);
