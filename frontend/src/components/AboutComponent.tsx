@@ -41,10 +41,6 @@ const AboutComponent: React.FC = () => {
             <li>
               <strong>API Integration:</strong> Fetching and displaying data from external services
             </li>
-            <li>
-              <strong>Full-Stack Development:</strong> Building both frontend and backend
-              applications
-            </li>
           </ul>
         </div>
 
